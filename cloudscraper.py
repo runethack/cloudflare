@@ -1,8 +1,14 @@
 """
-cloudscraper.py — пример использования cloudscraper для обхода классической Cloudflare IUAM ("checking your browser").
+cloudscraper.py
+Пример использования cloudscraper для обхода классической Cloudflare IUAM ("checking your browser").
+
+Улучшённый README и дополнительные файлы в репозитории помогают индексироваться поисковикам; этот файл — удобный исполняемый пример.
 
 Установка:
     pip install cloudscraper
+
+Использование:
+    python cloudscraper.py https://example.com
 
 Примечания:
 - cloudscraper может помочь с классической Cloudflare JS-защитой (IUAM), но не решает CAPTCHA.
@@ -18,6 +24,20 @@ from typing import Optional
 import cloudscraper
 
 
+def create_scraper() -> "cloudscraper.CloudScraper":
+    """Создаёт и настраивает cloudscraper CloudScraper.
+
+    Можно дополнительно настраивать заголовки, прокси и retry-логику по необходимости.
+    """
+    scraper = cloudscraper.create_scraper()  # использует requests-подобный интерфейс
+    # рекомендуемые заголовки для имитации реального браузера
+    scraper.headers.update({
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    })
+    return scraper
+
+
 def fetch(url: str, timeout: int = 15) -> "requests.Response":
     """Скачивает страницу с помощью cloudscraper и возвращает объект Response.
 
@@ -28,9 +48,7 @@ def fetch(url: str, timeout: int = 15) -> "requests.Response":
     Возвращает:
         requests.Response
     """
-    scraper = cloudscraper.create_scraper()
-    # можно настроить заголовки по необходимости
-    scraper.headers.update({"Accept": "text/html,application/xhtml+xml"})
+    scraper = create_scraper()
     resp = scraper.get(url, timeout=timeout)
     resp.raise_for_status()
     return resp
